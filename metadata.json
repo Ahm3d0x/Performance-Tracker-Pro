@@ -1,0 +1,6 @@
+{
+  "name": "منظومة التقييم واللياقة البدنية للقوات المسلحة",
+  "description": "نظام مكتبي متكامل لإدارة اختبارات التربية البدنية، حساب النسب الفردية والإجمالية، الترتيب التنازلي، ومقارنة الفترات مع التصدير إلى Excel و PDF.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
