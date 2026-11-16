@@ -1,30 +1,43 @@
 import express from 'express';
 import Database from 'better-sqlite3';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createServer as createViteServer } from 'vite';
 import {
   DEFAULT_SCORING_SETTINGS,
-  ScoringSettings,
-  PersonRecord,
-  AssessmentInput,
-} from './src/utils/scoring';
+  type ScoringSettings,
+  type PersonRecord,
+  type AssessmentInput,
+} from './src/utils/scoring.ts';
 import {
   INITIAL_PERIODS,
   INITIAL_PERSONNEL,
   generateSeedAssessments,
-  PeriodRecord,
-} from './src/data/seedPersonnel';
+  type PeriodRecord,
+} from './src/data/seedPersonnel.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+function resolveWritableDataDir(): string {
+  const localDir = path.join(__dirname, 'data');
+  try {
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    fs.accessSync(localDir, fs.constants.W_OK);
+    return localDir;
+  } catch {
+    const tmpDir = path.join(os.tmpdir(), 'military_fitness_data');
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
+    return tmpDir;
+  }
 }
 
+const DATA_DIR = resolveWritableDataDir();
 const DB_PATH = path.join(DATA_DIR, 'military_fitness.sqlite');
 const db = new Database(DB_PATH);
 db.pragma('journal_mode = WAL');
@@ -659,6 +672,7 @@ async function startServer() {
   });
 
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -672,7 +686,7 @@ async function startServer() {
     });
   }
 
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });

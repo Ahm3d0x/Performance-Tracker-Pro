@@ -1,9 +1,9 @@
 import {
-  PersonRecord,
-  AssessmentInput,
+  type PersonRecord,
+  type AssessmentInput,
   resolveStageForAge,
   DEFAULT_SCORING_SETTINGS,
-} from '../utils/scoring';
+} from '../utils/scoring.ts';
 
 export interface PeriodRecord {
   id: string;
