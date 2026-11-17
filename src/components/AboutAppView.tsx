@@ -5,7 +5,6 @@ import {
   RefreshCw,
   Download,
   Database,
-  ExternalLink,
   CheckCircle2,
   AlertTriangle,
   History,
@@ -44,7 +43,6 @@ interface UpdateCheckResult {
   hasUpdate: boolean;
   currentVersion: string;
   latestVersion: string;
-  repoUrl: string;
   checkedAt: string;
   message: string;
 }
@@ -106,7 +104,6 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
           hasUpdate: false,
           currentVersion: sysInfo?.version || '2.2.0',
           latestVersion: sysInfo?.version || '2.2.0',
-          repoUrl: 'https://github.com/Ahm3d0x/Performance-Tracker-Pro',
           checkedAt: new Date().toISOString(),
           message: 'تعذر الاتصال بخادم التحديثات (وضع العمل المحلي المستقل).',
         });
@@ -117,7 +114,6 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
         hasUpdate: false,
         currentVersion: sysInfo?.version || '2.2.0',
         latestVersion: sysInfo?.version || '2.2.0',
-        repoUrl: 'https://github.com/Ahm3d0x/Performance-Tracker-Pro',
         checkedAt: new Date().toISOString(),
         message: 'أنت تعمل حالياً في وضع عدم الاتصال بالإنترنت. المنظومة تعمل بكامل طاقتها محلياً.',
       });
@@ -240,7 +236,7 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
                 مركز فحص وتنزيل التحديثات وأمان البيانات
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                التحقق التلقائي من تحديثات المستودع، وحماية سجلاتك بنسخة احتياطية فورية قبل أي ترقية
+                التحقق التلقائي من التحديثات المعتمدة، وحماية سجلاتك بنسخة احتياطية فورية قبل أي ترقية
               </p>
             </div>
           </div>
@@ -256,26 +252,20 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
 
         {/* Action Controls for Update & Backup */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card 1: Check for updates on GitHub */}
+          {/* Card 1: Check for updates on Server */}
           <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 flex flex-col justify-between space-y-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                   <GitBranch className="w-4 h-4 text-emerald-600" />
-                  مستودع المنظومة الرسمي على GitHub
+                  خادم التحديثات الرسمي المعتمد
                 </span>
-                <a
-                  href="https://github.com/Ahm3d0x/Performance-Tracker-Pro"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-emerald-600 hover:text-emerald-500 flex items-center gap-1 font-semibold"
-                >
-                  <span>Ahm3d0x / Performance-Tracker-Pro</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-bold">
+                  متصل ومؤمن
+                </span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
-                يقوم النظام بفحص المستودع لاكتشاف أي تحسينات جديدة أو إصدارات تمت إضافتها، مع تنبيهك فور توفرها.
+                يقوم النظام بالتحقق التلقائي من توفر أي إصدارات أو تحسينات رسمية معتمدة، مع تنبيهك فور توفرها.
               </p>
             </div>
 
@@ -313,18 +303,8 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-xs disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${checkingUpdate ? 'animate-spin' : ''}`} />
-                <span>{checkingUpdate ? 'جاري فحص المستودع...' : 'فحص التحديثات الآن'}</span>
+                <span>{checkingUpdate ? 'جاري فحص التحديثات...' : 'فحص التحديثات الآن'}</span>
               </button>
-
-              <a
-                href="https://github.com/Ahm3d0x/Performance-Tracker-Pro"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5 text-amber-400" />
-                <span>صفحة تنزيل التحديث من GitHub</span>
-              </a>
             </div>
           </div>
 

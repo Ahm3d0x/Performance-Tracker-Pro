@@ -934,7 +934,7 @@ async function startServer() {
           repoUrl,
           checkedAt: new Date().toISOString(),
           message: hasUpdate
-            ? `يوجد إصدار أحدث متوفر الآن (${remoteVersion}) على مستودع GitHub!`
+            ? `يوجد إصدار أحدث متوفر الآن (${remoteVersion}) من خادم التحديثات الرسمي!`
             : 'المنظومة محدثة لأحدث إصدار رسمي ممتاز.',
         });
       } else {
@@ -945,7 +945,7 @@ async function startServer() {
           latestVersion: currentVersion,
           repoUrl,
           checkedAt: new Date().toISOString(),
-          message: 'تعذر جلب بيانات التحديث من GitHub.',
+          message: 'تعذر جلب بيانات التحديث من الخادم المركزي.',
         });
       }
     } catch {

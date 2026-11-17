@@ -436,7 +436,7 @@ export default function App() {
         <div className="bg-gradient-to-r from-amber-600 via-emerald-700 to-amber-600 text-white text-xs font-bold px-4 py-2 flex flex-wrap items-center justify-between gap-2 no-print shadow-md">
           <div className="flex items-center gap-2">
             <span className="p-1 bg-white/20 rounded-full animate-pulse">🔔</span>
-            <span>يتوفر الآن إصدار جديد للمنظومة (v{updateAvailable}) على GitHub! يمكنك أخذ نسخة احتياطية والترقية بأمان.</span>
+            <span>يتوفر الآن إصدار جديد للمنظومة (v{updateAvailable})! يمكنك أخذ نسخة احتياطية والترقية بأمان.</span>
           </div>
           <button
             type="button"
@@ -511,119 +511,148 @@ export default function App() {
         </div>
       </header>
 
-      {/* Secondary Workspace Context & Export Toolbar */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 py-3 no-print">
-        <div className="w-full flex flex-wrap items-center justify-between gap-4">
-          {/* Active Period Switcher & Unit Context */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-              <Shield className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-              <span className="font-bold text-slate-900 dark:text-white">
-                {settings.unitName}
-              </span>
-              <span>·</span>
-              <span>الفترة النشطة:</span>
+      {/* Secondary Workspace Context & Export Toolbar (Hidden on About Page) */}
+      {activeTab !== 'about' ? (
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 py-3 no-print">
+          <div className="w-full flex flex-wrap items-center justify-between gap-4">
+            {/* Active Period Switcher & Unit Context */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <Shield className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {settings.unitName}
+                </span>
+                <span>·</span>
+                <span>الفترة النشطة:</span>
+              </div>
+
+              <select
+                aria-label="اختيار الفترة التدريبية النشطة"
+                value={activePeriod.id}
+                onChange={(e) => setActivePeriodId(e.target.value)}
+                className="px-3 py-1.5 text-xs font-bold border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white cursor-pointer"
+              >
+                {periods.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.date})
+                  </option>
+                ))}
+              </select>
+
+              <div className="hidden xl:flex items-center gap-2 text-xs text-slate-500">
+                <span>·</span>
+                <span>قاعدة البيانات: SQLite محلية ({personnel.length} فرد)</span>
+                {previousPeriod && (
+                  <>
+                    <span>·</span>
+                    <span>مقارنة بـ: {previousPeriod.name}</span>
+                  </>
+                )}
+              </div>
             </div>
 
-            <select
-              aria-label="اختيار الفترة التدريبية النشطة"
-              value={activePeriod.id}
-              onChange={(e) => setActivePeriodId(e.target.value)}
-              className="px-3 py-1.5 text-xs font-bold border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white cursor-pointer"
-            >
-              {periods.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.date})
-                </option>
-              ))}
-            </select>
+            {/* Export Actions (Excel + PDF + SQLite) */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowExcelImportModal(true)}
+                className="px-3.5 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>استيراد كشف Excel (.xlsx)</span>
+              </button>
 
-            <div className="hidden xl:flex items-center gap-2 text-xs text-slate-500">
-              <span>·</span>
-              <span>قاعدة البيانات: SQLite محلية ({personnel.length} فرد)</span>
-              {previousPeriod && (
-                <>
-                  <span>·</span>
-                  <span>مقارنة بـ: {previousPeriod.name}</span>
-                </>
-              )}
+              <button
+                type="button"
+                onClick={() =>
+                  exportFullExcelWorkbook(
+                    activePeriod,
+                    currentEvaluated,
+                    currentSummary,
+                    currentComparisons,
+                    previousPeriod?.name,
+                    visibleColumns
+                  )
+                }
+                className="px-3.5 py-1.5 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>تصدير كشف Excel متكامل (.xlsx)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowPrintModal(true)}
+                className="px-3.5 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>معاينة وتصدير تقرير PDF</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('settings_db')}
+                className="px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <Database className="w-3.5 h-3.5 text-emerald-600" />
+                <span>SQLite / Sheets</span>
+              </button>
             </div>
           </div>
 
-          {/* Export Actions (Excel + PDF + SQLite) */}
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowExcelImportModal(true)}
-              className="px-3.5 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>استيراد كشف Excel (.xlsx)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                exportFullExcelWorkbook(
-                  activePeriod,
-                  currentEvaluated,
-                  currentSummary,
-                  currentComparisons,
-                  previousPeriod?.name,
-                  visibleColumns
-                )
-              }
-              className="px-3.5 py-1.5 text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>تصدير كشف Excel متكامل (.xlsx)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowPrintModal(true)}
-              className="px-3.5 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>معاينة وتصدير تقرير PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('settings_db')}
-              className="px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
-            >
-              <Database className="w-3.5 h-3.5 text-emerald-600" />
-              <span>SQLite / Sheets</span>
-            </button>
+          {/* Mobile Navigation Bar */}
+          <div className="flex md:hidden items-center gap-2 overflow-x-auto pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
+            {[
+              { id: 'overview', label: 'الإجماليات' },
+              { id: 'registry', label: 'النتائج والترتيب' },
+              { id: 'comparison', label: 'مقارنة الفترات' },
+              { id: 'fast_entry', label: 'إدخال سريع' },
+              { id: 'settings_db', label: 'المعايير و SQLite' },
+              { id: 'about', label: 'عن المنظومة' },
+            ].map((nav) => (
+              <button
+                key={nav.id}
+                type="button"
+                onClick={() => setActiveTab(nav.id as ActiveTab)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md whitespace-nowrap shrink-0 ${
+                  activeTab === nav.id
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-slate-100 text-slate-600'
+                }`}
+              >
+                {nav.label}
+              </button>
+            ))}
           </div>
         </div>
-
-        {/* Mobile Navigation Bar */}
-        <div className="flex md:hidden items-center gap-2 overflow-x-auto pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
-          {[
-            { id: 'overview', label: 'الإجماليات' },
-            { id: 'registry', label: 'النتائج والترتيب' },
-            { id: 'comparison', label: 'مقارنة الفترات' },
-            { id: 'fast_entry', label: 'إدخال سريع' },
-            { id: 'settings_db', label: 'المعايير و SQLite' },
-            { id: 'about', label: 'عن المنظومة' },
-          ].map((nav) => (
-            <button
-              key={nav.id}
-              type="button"
-              onClick={() => setActiveTab(nav.id as ActiveTab)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md whitespace-nowrap shrink-0 ${
-                activeTab === nav.id
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-600'
-              }`}
-            >
-              {nav.label}
-            </button>
-          ))}
+      ) : (
+        /* Mobile Navigation only when on About Tab */
+        <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 no-print">
+          <div className="flex items-center gap-2 overflow-x-auto">
+            {[
+              { id: 'overview', label: 'الإجماليات' },
+              { id: 'registry', label: 'النتائج والترتيب' },
+              { id: 'comparison', label: 'مقارنة الفترات' },
+              { id: 'fast_entry', label: 'إدخال سريع' },
+              { id: 'settings_db', label: 'المعايير و SQLite' },
+              { id: 'about', label: 'عن المنظومة' },
+            ].map((nav) => (
+              <button
+                key={nav.id}
+                type="button"
+                onClick={() => setActiveTab(nav.id as ActiveTab)}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-md whitespace-nowrap shrink-0 ${
+                  activeTab === nav.id
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-slate-100 text-slate-600'
+                }`}
+              >
+                {nav.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content Viewport */}
       <main
