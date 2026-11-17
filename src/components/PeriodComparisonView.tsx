@@ -6,6 +6,9 @@ import {
   ArrowLeftRight,
   Search,
   Eye,
+  FileSpreadsheet,
+  Printer,
+  RotateCcw,
 } from 'lucide-react';
 import {
   EvaluatedAssessment,
@@ -16,6 +19,7 @@ import {
   ScoringSettings,
 } from '../utils/scoring';
 import { PeriodRecord } from '../data/seedPersonnel';
+import { exportComparisonExcel } from '../utils/exportFile';
 
 interface PeriodComparisonViewProps {
   periods: PeriodRecord[];
@@ -23,6 +27,7 @@ interface PeriodComparisonViewProps {
   allEvaluatedByPeriod: Record<string, EvaluatedAssessment[]>;
   settings: ScoringSettings;
   onSelectPerson: (item: EvaluatedAssessment) => void;
+  onOpenPrintModal?: () => void;
 }
 
 export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
@@ -31,6 +36,7 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
   allEvaluatedByPeriod,
   settings,
   onSelectPerson,
+  onOpenPrintModal,
 }) => {
   const activeIdx = Math.max(
     0,
@@ -49,6 +55,8 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
   const [categoryFilter, setCategoryFilter] = useState<
     'all' | 'officers' | 'other_ranks'
   >('all');
+  const [stageFilter, setStageFilter] = useState<string>('all');
+  const [corpsFilter, setCorpsFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const targetPeriod =
@@ -95,6 +103,15 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
         10
     ) / 10;
 
+  // Available corps in comparison
+  const availableCorps = useMemo(() => {
+    const set = new Set<string>();
+    comparisons.forEach((c) => {
+      if (c.person.corps && c.person.corps.trim()) set.add(c.person.corps.trim());
+    });
+    return Array.from(set).sort();
+  }, [comparisons]);
+
   const filteredComparisons = useMemo(() => {
     return comparisons
       .filter((c) => {
@@ -104,12 +121,19 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
         if (trendFilter !== 'all' && c.trend !== trendFilter) {
           return false;
         }
+        if (stageFilter !== 'all' && String(c.current.stage.stage) !== stageFilter) {
+          return false;
+        }
+        if (corpsFilter !== 'all' && c.person.corps !== corpsFilter) {
+          return false;
+        }
         if (searchQuery.trim()) {
           const q = searchQuery.trim();
           if (
             !c.person.name.includes(q) &&
             !c.person.rank.includes(q) &&
-            !c.person.militaryId.includes(q)
+            !c.person.militaryId.includes(q) &&
+            !c.person.corps.includes(q)
           ) {
             return false;
           }
@@ -117,13 +141,27 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
         return true;
       })
       .sort((a, b) => {
-        // Sort by best improvement or current rank
         if (a.current.overallRank && b.current.overallRank) {
           return a.current.overallRank - b.current.overallRank;
         }
         return a.person.serialNum - b.person.serialNum;
       });
-  }, [comparisons, categoryFilter, trendFilter, searchQuery]);
+  }, [comparisons, categoryFilter, trendFilter, stageFilter, corpsFilter, searchQuery]);
+
+  const hasActiveFilters =
+    categoryFilter !== 'all' ||
+    trendFilter !== 'all' ||
+    stageFilter !== 'all' ||
+    corpsFilter !== 'all' ||
+    searchQuery.trim().length > 0;
+
+  const resetComparisonFilters = () => {
+    setCategoryFilter('all');
+    setTrendFilter('all');
+    setStageFilter('all');
+    setCorpsFilter('all');
+    setSearchQuery('');
+  };
 
   return (
     <div className="space-y-6">
@@ -168,7 +206,7 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
             <select
               value={targetPeriodId}
               onChange={(e) => setTargetPeriodId(e.target.value)}
-              className="px-3 py-1.5 text-xs font-semibold border border-emerald-600 rounded-lg bg-emerald-50/40 dark:bg-slate-800 text-emerald-950 dark:text-emerald-300"
+              className="px-3 py-1.5 text-xs font-semibold border border-emerald-600 rounded-lg bg-emerald-50/40 dark:bg-slate-800 text-emerald-950 dark:text-emerald-300 font-bold"
             >
               {periods.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -176,6 +214,26 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Export Comparison Action */}
+          <div className="pt-4 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                exportComparisonExcel(
+                  targetPeriod,
+                  basePeriod,
+                  filteredComparisons,
+                  targetSummary,
+                  baseSummary
+                )
+              }
+              className="px-3.5 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>تصدير المقارنة (Excel)</span>
+            </button>
           </div>
         </div>
       </div>
@@ -263,61 +321,112 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
 
       {/* Filters & Search for Comparison Table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-              {[
-                { id: 'all', label: 'كل الحالات' },
-                { id: 'improved', label: `متقدم (${improvedCount})` },
-                { id: 'stable', label: `ثابت (${stableCount})` },
-                { id: 'declined', label: `متراجع (${declinedCount})` },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setTrendFilter(tab.id as any)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                    trendFilter === tab.id
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                {[
+                  { id: 'all', label: 'كل الحالات' },
+                  { id: 'improved', label: `متقدم (${improvedCount})` },
+                  { id: 'stable', label: `ثابت (${stableCount})` },
+                  { id: 'declined', label: `متراجع (${declinedCount})` },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setTrendFilter(tab.id as any)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                      trendFilter === tab.id
+                        ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                {[
+                  { id: 'all', label: 'الكل' },
+                  { id: 'officers', label: 'الضباط' },
+                  { id: 'other_ranks', label: 'الدرجات الأخرى' },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat.id as any)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                      categoryFilter === cat.id
+                        ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
-              {[
-                { id: 'all', label: 'الكل' },
-                { id: 'officers', label: 'الضباط' },
-                { id: 'other_ranks', label: 'الدرجات الأخرى' },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategoryFilter(cat.id as any)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                    categoryFilter === cat.id
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
+            <div className="relative w-full md:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="بحث بالاسم، الرتبة، السلاح..."
+                className="w-full pr-9 pl-3 py-1.5 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+              />
             </div>
           </div>
 
-          <div className="relative w-full md:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="بحث بالاسم أو الرتبة..."
-              className="w-full pr-9 pl-3 py-1.5 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900"
-            />
+          {/* Secondary Filters Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="text-slate-500 font-semibold">المرحلة:</span>
+                <select
+                  value={stageFilter}
+                  onChange={(e) => setStageFilter(e.target.value)}
+                  className="px-2.5 py-1 border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                >
+                  <option value="all">جميع المراحل</option>
+                  <option value="1">المرحلة 1</option>
+                  <option value="2">المرحلة 2</option>
+                  <option value="3">المرحلة 3</option>
+                  <option value="4">المرحلة 4</option>
+                  <option value="5">المرحلة 5</option>
+                  <option value="6">المرحلة 6</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-slate-500 font-semibold">السلاح:</span>
+                <select
+                  value={corpsFilter}
+                  onChange={(e) => setCorpsFilter(e.target.value)}
+                  className="px-2.5 py-1 border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
+                >
+                  <option value="all">كل الأسلحة ({availableCorps.length})</option>
+                  {availableCorps.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetComparisonFilters}
+                className="text-red-600 hover:text-red-700 font-semibold flex items-center gap-1 cursor-pointer text-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>إلغاء الفلترة</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -327,7 +436,7 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
               <tr>
                 <th className="py-3 px-3 text-center">م</th>
                 <th className="py-3 px-3">الرتبة / الدرجة</th>
-                <th className="py-3 px-4">الاسم</th>
+                <th className="py-3 px-4">الاسم والبيانات</th>
                 <th className="py-3 px-3 text-center">الترتيب السابق ← الحالي</th>
                 <th className="py-3 px-3 text-center">فرق المراكز</th>
                 <th className="py-3 px-3 text-center">نسبة التمرينات (سابق ← حالي)</th>
@@ -338,103 +447,114 @@ export const PeriodComparisonView: React.FC<PeriodComparisonViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-              {filteredComparisons.map((item) => (
-                <tr
-                  key={item.person.id}
-                  className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                >
-                  <td className="py-2.5 px-3 text-center font-mono tabular-nums text-slate-500">
-                    {item.person.serialNum}
-                  </td>
-                  <td className="py-2.5 px-3 font-medium text-slate-700 dark:text-slate-300">
-                    {item.person.rank}
-                  </td>
-                  <td className="py-2.5 px-4 font-bold text-slate-900 dark:text-white">
-                    {item.person.name}
-                  </td>
-                  <td className="py-2.5 px-3 text-center font-mono tabular-nums">
-                    <span className="text-slate-500">
-                      {item.previous?.overallRank
-                        ? `#${item.previous.overallRank}`
-                        : '-'}
-                    </span>
-                    <span className="mx-1.5 text-slate-400">←</span>
-                    <strong className="text-slate-900 dark:text-white">
-                      {item.current.overallRank
-                        ? `#${item.current.overallRank}`
-                        : '-'}
-                    </strong>
-                  </td>
-                  <td className="py-2.5 px-3 text-center">
-                    {item.rankDelta === null ? (
-                      <span className="text-slate-400">-</span>
-                    ) : item.rankDelta > 0 ? (
-                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                        <span className="font-mono tabular-nums">+{item.rankDelta}</span> مركز
-                      </span>
-                    ) : item.rankDelta < 0 ? (
-                      <span className="text-red-600 dark:text-red-400 font-bold">
-                        <span className="font-mono tabular-nums">{item.rankDelta}</span> مركز
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">ثابت</span>
-                    )}
-                  </td>
-                  <td className="py-2.5 px-3 text-center font-mono tabular-nums">
-                    <span className="text-slate-500">
-                      {item.previous ? `${item.previous.exercisesPercentage}%` : '-'}
-                    </span>
-                    <span className="mx-1 text-slate-400">←</span>
-                    <span>{item.current.exercisesPercentage}%</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-center font-mono tabular-nums">
-                    <span className="text-slate-500">
-                      {item.previous ? `${item.previous.suburbScore}%` : '-'}
-                    </span>
-                    <span className="mx-1 text-slate-400">←</span>
-                    <span>{item.current.suburbScore}%</span>
-                  </td>
-                  <td className="py-2.5 px-3 text-center font-mono tabular-nums font-bold">
-                    <span className="text-slate-500 font-normal">
-                      {item.previous ? `${item.previous.totalPercentage}%` : '-'}
-                    </span>
-                    <span className="mx-1.5 text-slate-400">←</span>
-                    <span className="text-slate-900 dark:text-white">
-                      {item.current.totalPercentage}%
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-4 text-center font-mono tabular-nums">
-                    {item.percentageDelta === null ? (
-                      <span className="text-slate-400">غير مختبر</span>
-                    ) : item.percentageDelta > 0 ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
-                        <TrendingUp className="w-3.5 h-3.5" />
-                        +{item.percentageDelta}%
-                      </span>
-                    ) : item.percentageDelta < 0 ? (
-                      <span className="inline-flex items-center gap-1 text-red-600 dark:text-red-400 font-bold">
-                        <TrendingDown className="w-3.5 h-3.5" />
-                        {item.percentageDelta}%
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-slate-500">
-                        <Minus className="w-3.5 h-3.5" />
-                        0.0%
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-2.5 px-3 text-center">
-                    <button
-                      type="button"
-                      onClick={() => onSelectPerson(item.current)}
-                      aria-label={`عرض تفاصيل ${item.person.name}`}
-                      className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
+              {filteredComparisons.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-10 text-center text-slate-400">
+                    لا توجد سجلات مطابقة للفلترة الحالية
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredComparisons.map((item) => (
+                  <tr
+                    key={item.person.id}
+                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  >
+                    <td className="py-2.5 px-3 text-center font-mono tabular-nums text-slate-500">
+                      {item.person.serialNum}
+                    </td>
+                    <td className="py-2.5 px-3 font-medium text-slate-700 dark:text-slate-300">
+                      {item.person.rank}
+                    </td>
+                    <td className="py-2.5 px-4 font-bold text-slate-900 dark:text-white">
+                      <div>{item.person.name}</div>
+                      <div className="text-[11px] font-normal text-slate-400">
+                        {item.person.corps} · ر.ع: {item.person.militaryId}
+                      </div>
+                    </td>
+                    <td className="py-2.5 px-3 text-center font-mono tabular-nums">
+                      <span className="text-slate-500">
+                        {item.previous?.overallRank
+                          ? `#${item.previous.overallRank}`
+                          : '-'}
+                      </span>
+                      <span className="mx-1.5 text-slate-400">←</span>
+                      <strong className="text-slate-900 dark:text-white">
+                        {item.current.overallRank
+                          ? `#${item.current.overallRank}`
+                          : '-'}
+                      </strong>
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      {item.rankDelta === null ? (
+                        <span className="text-slate-400">-</span>
+                      ) : item.rankDelta > 0 ? (
+                        <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                          <span className="font-mono tabular-nums">+{item.rankDelta}</span> مركز
+                        </span>
+                      ) : item.rankDelta < 0 ? (
+                        <span className="text-red-600 dark:text-red-400 font-bold">
+                          <span className="font-mono tabular-nums">{item.rankDelta}</span> مركز
+                        </span>
+                      ) : (
+                        <span className="text-slate-500">ثابت</span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-3 text-center font-mono tabular-nums">
+                      <span className="text-slate-500">
+                        {item.previous ? `${item.previous.exercisesPercentage}%` : '-'}
+                      </span>
+                      <span className="mx-1 text-slate-400">←</span>
+                      <span>{item.current.exercisesPercentage}%</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-center font-mono tabular-nums">
+                      <span className="text-slate-500">
+                        {item.previous ? `${item.previous.suburbScore}%` : '-'}
+                      </span>
+                      <span className="mx-1 text-slate-400">←</span>
+                      <span>{item.current.suburbScore}%</span>
+                    </td>
+                    <td className="py-2.5 px-3 text-center font-mono tabular-nums font-bold">
+                      <span className="text-slate-500 font-normal">
+                        {item.previous ? `${item.previous.totalPercentage}%` : '-'}
+                      </span>
+                      <span className="mx-1.5 text-slate-400">←</span>
+                      <span className="text-slate-900 dark:text-white">
+                        {item.current.totalPercentage}%
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-4 text-center font-mono tabular-nums">
+                      {item.percentageDelta === null ? (
+                        <span className="text-slate-400">غير مختبر</span>
+                      ) : item.percentageDelta > 0 ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold">
+                          <TrendingUp className="w-3.5 h-3.5" />
+                          +{item.percentageDelta}%
+                        </span>
+                      ) : item.percentageDelta < 0 ? (
+                        <span className="inline-flex items-center gap-1 text-red-600 dark:text-red-400 font-bold">
+                          <TrendingDown className="w-3.5 h-3.5" />
+                          {item.percentageDelta}%
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-slate-500">
+                          <Minus className="w-3.5 h-3.5" />
+                          0.0%
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <button
+                        type="button"
+                        onClick={() => onSelectPerson(item.current)}
+                        aria-label={`عرض تفاصيل ${item.person.name}`}
+                        className="p-1.5 text-slate-600 hover:text-emerald-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors cursor-pointer"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -73,11 +73,114 @@
 }
 
 @media print {
-  .no-print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  /* Universal Print Reset */
+  *, *::before, *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide screen chrome & controls */
+  .no-print,
+  header,
+  footer,
+  nav,
+  button,
+  input,
+  select,
+  textarea {
     display: none !important;
   }
-  body {
+
+  /* When any modal dialog or print-modal is present, hide the entire main dashboard and root app */
+  body:has(div[role="dialog"]) #root > div > main,
+  body:has(div[role="dialog"]) main,
+  body.has-modal-open main,
+  body.has-print-modal main {
+    display: none !important;
+  }
+
+  /* Modal print normalization: remove overlay, fixed positioning, backdrop and scrollbars */
+  div[role="dialog"] {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    z-index: auto !important;
+  }
+
+  div[role="dialog"] > div {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
     background: #ffffff !important;
-    color: #000000 !important;
+  }
+
+  /* Strip scrollbar wrappers and height caps */
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .max-h-\[82vh\],
+  .max-h-\[92vh\] {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Tables in Print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  th, td {
+    padding: 3px 5px !important;
+    font-size: 10px !important;
+    border-color: #94a3b8 !important;
+  }
+
+  /* Page break avoidance for cards and tables */
+  .print-page-break-avoid,
+  tr,
+  .print-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

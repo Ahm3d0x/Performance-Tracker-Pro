@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <!-- Rich Gold Gradients -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="25%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#EAB308" />
+      <stop offset="75%" stop-color="#CA8A04" />
+      <stop offset="100%" stop-color="#854D0E" />
+    </linearGradient>
+
+    <radialGradient id="goldRadialEmblem" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FEF9C3" />
+      <stop offset="30%" stop-color="#FACC15" />
+      <stop offset="65%" stop-color="#CA8A04" />
+      <stop offset="90%" stop-color="#854D0E" />
+      <stop offset="100%" stop-color="#451A03" />
+    </radialGradient>
+
+    <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="30%" stop-color="#E2E8F0" />
+      <stop offset="70%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+
+    <linearGradient id="bgDisc" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="40%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <linearGradient id="shieldRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#DC2626" />
+      <stop offset="100%" stop-color="#991B1B" />
+    </linearGradient>
+
+    <linearGradient id="shieldWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#CBD5E1" />
+    </linearGradient>
+
+    <linearGradient id="shieldBlack" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Drop Shadows & Glow Filters -->
+    <filter id="badgeShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="emboss" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Outermost Decorative Gold Gear / Sunburst Border -->
+  <g filter="url(#badgeShadow)">
+    <circle cx="256" cy="256" r="240" fill="url(#bgDisc)" stroke="url(#goldLight)" stroke-width="6"/>
+    <circle cx="256" cy="256" r="226" fill="none" stroke="url(#goldRadialEmblem)" stroke-width="2"/>
+    <circle cx="256" cy="256" r="218" fill="none" stroke="url(#goldLight)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  </g>
+
+  <!-- Circular Decorative Rivets / Stars around Perimeter -->
+  <g fill="url(#goldRadialEmblem)">
+    <circle cx="256" cy="24" r="5" />
+    <circle cx="256" cy="488" r="5" />
+    <circle cx="24" cy="256" r="5" />
+    <circle cx="488" cy="256" r="5" />
+    <circle cx="92" cy="92" r="4" />
+    <circle cx="420" cy="92" r="4" />
+    <circle cx="92" cy="420" r="4" />
+    <circle cx="420" cy="420" r="4" />
+  </g>
+
+  <!-- 2. Crossed Egyptian Military Officers' Swords (Passing Behind the Shield) -->
+  <g filter="url(#emboss)">
+    <!-- Sword 1: Top-Left to Bottom-Right -->
+    <g>
+      <!-- Blade -->
+      <path d="M100 100 L395 395 L405 405 L400 410 L385 395 L95 105 Z" fill="url(#bladeSteel)"/>
+      <path d="M100 100 L395 395" stroke="#ffffff" stroke-width="1.5"/>
+      <!-- Sword Tip Point -->
+      <polygon points="95,105 85,85 105,95" fill="url(#bladeSteel)" stroke="url(#goldLight)" stroke-width="1"/>
+      <!-- Crossguard -->
+      <path d="M370 415 L415 370 L425 380 L380 425 Z" fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+      <circle cx="370" cy="418" r="6" fill="url(#goldLight)"/>
+      <circle cx="422" cy="368" r="6" fill="url(#goldLight)"/>
+      <!-- Hilt / Grip -->
+      <path d="M400 400 L435 435" stroke="url(#goldRadialEmblem)" stroke-width="10" stroke-linecap="round"/>
+      <!-- Grip Ridges -->
+      <line x1="405" y1="412" x2="415" y2="402" stroke="#451a03" stroke-width="2"/>
+      <line x1="415" y1="422" x2="425" y2="412" stroke="#451a03" stroke-width="2"/>
+      <line x1="425" y1="432" x2="435" y2="422" stroke="#451a03" stroke-width="2"/>
+      <!-- Pommel -->
+      <circle cx="442" cy="442" r="9" fill="url(#goldLight)" stroke="#78350F" stroke-width="2"/>
+      <circle cx="442" cy="442" r="4" fill="#451a03"/>
+    </g>
+
+    <!-- Sword 2: Top-Right to Bottom-Left -->
+    <g>
+      <!-- Blade -->
+      <path d="M412 100 L117 395 L107 405 L112 410 L127 395 L417 105 Z" fill="url(#bladeSteel)"/>
+      <path d="M412 100 L117 395" stroke="#ffffff" stroke-width="1.5"/>
+      <!-- Sword Tip Point -->
+      <polygon points="417,105 427,85 407,95" fill="url(#bladeSteel)" stroke="url(#goldLight)" stroke-width="1"/>
+      <!-- Crossguard -->
+      <path d="M142 415 L97 370 L87 380 L132 425 Z" fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+      <circle cx="142" cy="418" r="6" fill="url(#goldLight)"/>
+      <circle cx="90" cy="368" r="6" fill="url(#goldLight)"/>
+      <!-- Hilt / Grip -->
+      <path d="M112 400 L77 435" stroke="url(#goldRadialEmblem)" stroke-width="10" stroke-linecap="round"/>
+      <!-- Grip Ridges -->
+      <line x1="107" y1="412" x2="97" y2="402" stroke="#451a03" stroke-width="2"/>
+      <line x1="97" y1="422" x2="87" y2="412" stroke="#451a03" stroke-width="2"/>
+      <line x1="87" y1="432" x2="77" y2="422" stroke="#451a03" stroke-width="2"/>
+      <!-- Pommel -->
+      <circle cx="70" cy="442" r="9" fill="url(#goldLight)" stroke="#78350F" stroke-width="2"/>
+      <circle cx="70" cy="442" r="4" fill="#451a03"/>
+    </g>
+  </g>
+
+  <!-- 3. Laurel Wreath of Victory & Olive Leaves (Wrapping Left & Right) -->
+  <g fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1" filter="url(#emboss)">
+    <!-- Left Leaves Branch -->
+    <path d="M96 280 C90 250 94 210 115 175 M115 175 C102 165 92 180 98 195 M110 205 C96 200 90 215 100 228 M106 238 C90 238 88 256 102 265 M105 275 C92 280 94 300 110 304 M114 314 C102 324 108 344 126 342 M130 350 C120 365 132 385 152 380 M158 386 C150 405 170 420 188 410" 
+          stroke="url(#goldLight)" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Left Leaf Pairs -->
+    <path d="M90 190 Q112 185 116 172 Q105 188 90 190 Z"/>
+    <path d="M86 220 Q108 214 110 200 Q100 218 86 220 Z"/>
+    <path d="M84 254 Q106 248 106 232 Q96 250 84 254 Z"/>
+    <path d="M88 290 Q110 284 106 268 Q98 286 88 290 Z"/>
+    <path d="M100 326 Q122 318 114 302 Q108 322 100 326 Z"/>
+    <path d="M120 360 Q142 348 130 334 Q126 354 120 360 Z"/>
+    <path d="M148 392 Q168 376 152 364 Q150 386 148 392 Z"/>
+
+    <!-- Right Leaves Branch -->
+    <path d="M416 280 C422 250 418 210 397 175 M397 175 C410 165 420 180 414 195 M402 205 C416 200 422 215 412 228 M406 238 C422 238 424 256 410 265 M407 275 C420 280 418 300 402 304 M398 314 C410 324 404 344 386 342 M382 350 C392 365 380 385 360 380 M354 386 C362 405 342 420 324 410" 
+          stroke="url(#goldLight)" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Right Leaf Pairs -->
+    <path d="M422 190 Q400 185 396 172 Q407 188 422 190 Z"/>
+    <path d="M426 220 Q404 214 402 200 Q412 218 426 220 Z"/>
+    <path d="M428 254 Q406 248 406 232 Q416 250 428 254 Z"/>
+    <path d="M424 290 Q402 284 406 268 Q414 286 424 290 Z"/>
+    <path d="M412 326 Q390 318 398 302 Q404 322 412 326 Z"/>
+    <path d="M392 360 Q370 348 382 334 Q386 354 392 360 Z"/>
+    <path d="M364 392 Q344 376 360 364 Q362 386 364 392 Z"/>
+  </g>
+
+  <!-- 4. Central Military Academy Shield -->
+  <g filter="url(#badgeShadow)">
+    <!-- Outer Shield Border -->
+    <path d="M256 100 C320 100 360 120 360 180 C360 270 280 345 256 365 C232 345 152 270 152 180 C152 120 192 100 256 100 Z" 
+          fill="#0f172a" stroke="url(#goldLight)" stroke-width="8"/>
+    <!-- Inner Gold Inset -->
+    <path d="M256 112 C312 112 348 128 348 182 C348 262 276 332 256 350 C236 332 164 262 164 182 C164 128 200 112 256 112 Z" 
+          fill="none" stroke="url(#goldRadialEmblem)" stroke-width="2"/>
+
+    <!-- Egyptian Flag Tricolor Shield Fill -->
+    <g>
+      <clipPath id="shieldClip">
+        <path d="M256 116 C310 116 344 130 344 182 C344 260 274 328 256 346 C238 328 168 260 168 182 C168 130 202 116 256 116 Z"/>
+      </clipPath>
+      <g clip-path="url(#shieldClip)">
+        <!-- Top Band: Red -->
+        <rect x="150" y="110" width="212" height="66" fill="url(#shieldRed)"/>
+        <!-- Middle Band: White / Silver -->
+        <rect x="150" y="176" width="212" height="62" fill="url(#shieldWhite)"/>
+        <!-- Bottom Band: Black -->
+        <rect x="150" y="238" width="212" height="120" fill="url(#shieldBlack)"/>
+        <!-- Gold dividing pinstripes -->
+        <line x1="150" y1="176" x2="362" y2="176" stroke="url(#goldLight)" stroke-width="2"/>
+        <line x1="150" y1="238" x2="362" y2="238" stroke="url(#goldLight)" stroke-width="2"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- 5. Golden Eagle of Saladin (Detailed Hero Element) -->
+  <g transform="translate(256, 204)" filter="url(#softGlow)">
+    <!-- Wings Outspread Left -->
+    <path d="M-6 -22 C-14 -32 -32 -36 -58 -28 C-74 -22 -84 -8 -80 18 C-70 12 -58 4 -46 2 C-38 18 -26 28 -14 34 C-10 16 -12 2 -8 -8 Z" 
+          fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+    <!-- Wing Feathers Left -->
+    <path d="M-78 -10 C-62 -14 -48 -6 -40 8 M-72 6 C-58 2 -46 8 -36 18 M-64 20 C-50 16 -40 22 -30 28" 
+          stroke="url(#goldLight)" stroke-width="1.5" fill="none"/>
+
+    <!-- Wings Outspread Right -->
+    <path d="M6 -22 C14 -32 32 -36 58 -28 C74 -22 84 -8 80 18 C70 12 58 4 46 2 C38 18 26 28 14 34 C10 16 12 2 8 -8 Z" 
+          fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+    <!-- Wing Feathers Right -->
+    <path d="M78 -10 C62 -14 48 -6 40 8 M72 6 C58 2 46 8 36 18 M64 20 C50 16 40 22 30 28" 
+          stroke="url(#goldLight)" stroke-width="1.5" fill="none"/>
+
+    <!-- Eagle Tail Feathers -->
+    <path d="M-14 32 L-20 62 L-6 58 L0 66 L6 58 L20 62 L14 32 Z" 
+          fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+    <line x1="-8" y1="36" x2="-10" y2="56" stroke="url(#goldLight)" stroke-width="1"/>
+    <line x1="0" y1="36" x2="0" y2="60" stroke="url(#goldLight)" stroke-width="1"/>
+    <line x1="8" y1="36" x2="10" y2="56" stroke="url(#goldLight)" stroke-width="1"/>
+
+    <!-- Eagle Head (Turned to Right as per Egyptian Heraldry) -->
+    <path d="M-8 -22 C-6 -34 6 -38 14 -36 C22 -34 26 -28 26 -22 C26 -16 18 -12 12 -12 C6 -12 0 -16 -8 -22 Z" 
+          fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1.5"/>
+    <!-- Beak -->
+    <path d="M22 -28 C28 -28 34 -25 32 -20 C28 -18 22 -19 18 -21 Z" fill="#FDE047" stroke="#78350F" stroke-width="1"/>
+    <!-- Eye -->
+    <circle cx="16" cy="-25" r="2.5" fill="#000000"/>
+    <circle cx="16.5" cy="-25.5" r="1" fill="#FFFFFF"/>
+
+    <!-- Eagle Torso / Chest Shield -->
+    <path d="M-16 -12 C-16 -12 -18 16 -14 26 C-10 34 0 38 0 38 C0 38 10 34 14 26 C18 16 16 -12 16 -12 Z" 
+          fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="2"/>
+
+    <!-- Inner Chest Mini-Shield -->
+    <path d="M-10 -4 L10 -4 L8 18 L0 26 L-8 18 Z" 
+          fill="#1e293b" stroke="url(#goldLight)" stroke-width="1.2"/>
+    <rect x="-8" y="-2" width="16" height="7" fill="#991B1B"/>
+    <rect x="-8" y="5" width="16" height="6" fill="#F8FAFC"/>
+    <rect x="-8" y="11" width="16" height="8" fill="#020617"/>
+
+    <!-- Talons / Claws Clutching Scroll -->
+    <g fill="url(#goldLight)" stroke="#451a03" stroke-width="1">
+      <circle cx="-10" cy="35" r="3.5"/>
+      <circle cx="-5" cy="37" r="3.5"/>
+      <circle cx="5" cy="37" r="3.5"/>
+      <circle cx="10" cy="35" r="3.5"/>
+    </g>
+  </g>
+
+  <!-- 6. Three Stars of Excellence / Supreme Command at Top Crest -->
+  <g fill="url(#goldRadialEmblem)" stroke="#78350F" stroke-width="1" filter="url(#emboss)">
+    <!-- Center Star -->
+    <g transform="translate(256, 72) scale(1.1)">
+      <polygon points="0,-14 4.3,-4.3 14.7,-4.3 6.3,2.3 9.7,12.7 0,6.3 -9.7,12.7 -6.3,2.3 -14.7,-4.3 -4.3,-4.3" fill="url(#goldLight)"/>
+    </g>
+    <!-- Left Star -->
+    <g transform="translate(216, 80) scale(0.85)">
+      <polygon points="0,-14 4.3,-4.3 14.7,-4.3 6.3,2.3 9.7,12.7 0,6.3 -9.7,12.7 -6.3,2.3 -14.7,-4.3 -4.3,-4.3" fill="url(#goldLight)"/>
+    </g>
+    <!-- Right Star -->
+    <g transform="translate(296, 80) scale(0.85)">
+      <polygon points="0,-14 4.3,-4.3 14.7,-4.3 6.3,2.3 9.7,12.7 0,6.3 -9.7,12.7 -6.3,2.3 -14.7,-4.3 -4.3,-4.3" fill="url(#goldLight)"/>
+    </g>
+  </g>
+
+  <!-- 7. Grand Ornate Golden Ribbon Banner across the bottom -->
+  <g filter="url(#badgeShadow)">
+    <!-- Ribbon Tails / Folds (Shadow Behind) -->
+    <path d="M72 410 L120 380 L120 425 L72 455 Z" fill="#713F12"/>
+    <path d="M440 410 L392 380 L392 425 L440 455 Z" fill="#713F12"/>
+    <polygon points="72,455 96,432 72,410" fill="#451A03"/>
+    <polygon points="440,455 416,432 440,410" fill="#451A03"/>
+
+    <!-- Main Front Ribbon Body -->
+    <path d="M96 415 C140 395 210 388 256 388 C302 388 372 395 416 415 C405 445 365 460 256 460 C147 460 107 445 96 415 Z" 
+          fill="url(#goldRadialEmblem)" stroke="url(#goldLight)" stroke-width="3"/>
+    <!-- Inner Ribbon Edge -->
+    <path d="M106 418 C146 401 212 394 256 394 C300 394 366 401 406 418" 
+          fill="none" stroke="#FEF08A" stroke-width="1.5" stroke-dasharray="4 2"/>
+
+    <!-- Official Title: الكلية الحربية -->
+    <text x="256" y="426" 
+          font-family="'Cairo', 'IBM Plex Sans Arabic', 'Arial', sans-serif" 
+          font-size="25" 
+          font-weight="900" 
+          fill="#0f172a" 
+          text-anchor="middle" 
+          letter-spacing="1">
+      الـكـلـيـة الـحـربـيـة
+    </text>
+
+    <!-- Sub-Ribbon / Motto: الواجب · الشرف · الوطن -->
+    <path d="M148 456 C190 448 230 446 256 446 C282 446 322 448 364 456 C350 478 310 484 256 484 C202 484 162 478 148 456 Z" 
+          fill="#0f172a" stroke="url(#goldLight)" stroke-width="2"/>
+    <text x="256" y="473" 
+          font-family="'Cairo', 'IBM Plex Sans Arabic', 'Arial', sans-serif" 
+          font-size="13" 
+          font-weight="800" 
+          fill="url(#goldLight)" 
+          text-anchor="middle" 
+          letter-spacing="2">
+      الـواجـب · الـشـرف · الـوطـن
+    </text>
+  </g>
+</svg>

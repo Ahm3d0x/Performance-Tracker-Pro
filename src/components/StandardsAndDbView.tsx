@@ -132,9 +132,8 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
       beneficiary: newPeriodBeneficiary,
       unitName: localSettings.unitName,
       notes: '',
-      copyFromPeriodId: copyFromId || undefined,
     });
-    setStatusBanner(`تم إنشاء الفترة التدريبية "${newPeriodName}" بنجاح.`);
+    setStatusBanner(`تم إنشاء الفترة التدريبية "${newPeriodName}" بنجاح كفترة جديدة فارغة (0%).`);
   };
 
   const handleGoogleLogin = async () => {
@@ -314,20 +313,20 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
               type="button"
               onClick={() =>
                 setConfirmDialog({
-                  title: 'إعادة ضبط قاعدة البيانات للبيانات الافتراضية؟',
+                  title: 'تصفير كافة السجلات والبيانات (إعادة ضبط المصنع)؟',
                   description:
-                    'سيؤدي هذا الإجراء إلى إعادة ضبط جميع السجلات والفترات في قاعدة بيانات SQLite إلى بيانات الكشف المرفق (58 فرداً في 3 فترات تدريبية).',
-                  confirmLabel: 'تأكيد إعادة الضبط',
+                    'تنبيه هام: سيؤدي هذا الإجراء إلى مسح كافة سجلات الأفراد والفترات والدرجات نهائياً من قاعدة البيانات (0 أفراد)، وتهيئة المنظومة كقاعدة بيانات بيضاء نظيفة تماماً كأنها تفتح لأول مرة.',
+                  confirmLabel: 'تأكيد تصفير ومسح كافة البيانات نهائياً',
                   onConfirm: async () => {
                     await onResetDatabase();
-                    setStatusBanner('تمت إعادة ضبط قاعدة بيانات SQLite للبيانات الأصلية.');
+                    setStatusBanner('تم تصفير كافة السجلات والبيانات بنجاح. المنظومة فارغة الآن وجاهزة للعمل الفعلي.');
                   },
                 })
               }
               className="px-3.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 border border-red-200 rounded-lg flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>إعادة ضبط المصنع</span>
+              <span>تصفير السجلات (إعادة ضبط المصنع)</span>
             </button>
           </div>
         </div>
@@ -497,7 +496,7 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
 
         <form
           onSubmit={handleCreatePeriodSubmit}
-          className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl items-end"
+          className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl items-end"
         >
           <div className="md:col-span-2">
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -507,6 +506,7 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
               type="text"
               value={newPeriodName}
               onChange={(e) => setNewPeriodName(e.target.value)}
+              placeholder="مثال: الاختبار الدوري الثاني - مايو 2026"
               className="w-full px-3 py-2 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900"
             />
           </div>
@@ -521,29 +521,12 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
               className="w-full px-3 py-2 text-xs font-mono border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900"
             />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
-              نسخ الدرجات المبدئية من
-            </label>
-            <select
-              value={copyFromId}
-              onChange={(e) => setCopyFromId(e.target.value)}
-              className="w-full px-2.5 py-2 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900"
-            >
-              <option value="">فترة فارغة (بدون درجات)</option>
-              {periods.map((p) => (
-                <option key={p.id} value={p.id}>
-                  نسخ من: {p.name}
-                </option>
-              ))}
-            </select>
-          </div>
           <button
             type="submit"
             className="px-4 py-2 text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg flex items-center justify-center gap-1.5 cursor-pointer h-[36px]"
           >
             <Plus className="w-4 h-4" />
-            <span>إضافة فترة جديدة</span>
+            <span>إضافة فترة فارغة جديدة (0%)</span>
           </button>
         </form>
 
