@@ -719,83 +719,136 @@ export const StandardsAndDbView: React.FC<StandardsAndDbViewProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {localSettings.stages.map((st, idx) => (
-                  <tr key={st.stage}>
-                    <td className="py-2 px-3 font-semibold">{st.name}</td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.minAge}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, minAge: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-16 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.maxAge}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, maxAge: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-16 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.pullupsMax}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, pullupsMax: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.pushupsMax}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, pushupsMax: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.situpsMax}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, situpsMax: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <input
-                        type="number"
-                        value={st.runMax}
-                        onChange={(e) => {
-                          const next = [...localSettings.stages];
-                          next[idx] = { ...st, runMax: Number(e.target.value) };
-                          setLocalSettings({ ...localSettings, stages: next });
-                        }}
-                        className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900"
-                      />
-                    </td>
-                  </tr>
-                ))}
+                {localSettings.stages.map((st, idx) => {
+                  const focusStageCell = (r: number, c: number) => {
+                    const el = document.getElementById(`stage-cell-${r}-${c}`);
+                    if (el) {
+                      el.focus();
+                      if (el instanceof HTMLInputElement) el.select();
+                    }
+                  };
+
+                  const handleKey = (e: React.KeyboardEvent, c: number) => {
+                    const maxRows = localSettings.stages.length;
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (c < 5) focusStageCell(idx, c + 1);
+                      else if (idx < maxRows - 1) focusStageCell(idx + 1, 0);
+                    } else if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      if (idx < maxRows - 1) focusStageCell(idx + 1, c);
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      if (idx > 0) focusStageCell(idx - 1, c);
+                    } else if (e.key === 'ArrowLeft') {
+                      if (c < 5) {
+                        e.preventDefault();
+                        focusStageCell(idx, c + 1);
+                      }
+                    } else if (e.key === 'ArrowRight') {
+                      if (c > 0) {
+                        e.preventDefault();
+                        focusStageCell(idx, c - 1);
+                      }
+                    }
+                  };
+
+                  return (
+                    <tr key={st.stage}>
+                      <td className="py-2 px-3 font-semibold">{st.name}</td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-0`}
+                          type="number"
+                          value={st.minAge}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 0)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, minAge: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-16 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-1`}
+                          type="number"
+                          value={st.maxAge}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 1)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, maxAge: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-16 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-2`}
+                          type="number"
+                          value={st.pullupsMax}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 2)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, pullupsMax: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-3`}
+                          type="number"
+                          value={st.pushupsMax}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 3)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, pushupsMax: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-4`}
+                          type="number"
+                          value={st.situpsMax}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 4)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, situpsMax: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <input
+                          id={`stage-cell-${idx}-5`}
+                          type="number"
+                          value={st.runMax}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => handleKey(e, 5)}
+                          onChange={(e) => {
+                            const next = [...localSettings.stages];
+                            next[idx] = { ...st, runMax: Number(e.target.value) };
+                            setLocalSettings({ ...localSettings, stages: next });
+                          }}
+                          className="w-20 px-2 py-1 text-center font-mono tabular-nums border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 focus:border-emerald-500 focus:outline-hidden"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
