@@ -28,8 +28,7 @@ interface SystemInfo {
   institution: string;
   motto: string;
   author: string;
-  repo: string;
-  repoUrl: string;
+  specialization?: string;
   dbPath: string;
   dbSizeBytes: number;
   personnelCount: number;
@@ -500,17 +499,49 @@ export const AboutAppView: React.FC<AboutAppViewProps> = ({ onRefreshAppState })
         </div>
       </div>
 
-      {/* 4. Engineering & Development Credits Footer */}
-      <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-6 text-center space-y-2">
-        <div className="text-xs text-amber-400 font-bold tracking-widest uppercase">
-          جمهورية مصر العربية · القوات المسلحة · الكلية الحربية المصرية
+      {/* 4. Engineering & Development Credits Card */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 text-white border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-right">
+          <div className="space-y-3">
+            <div className="text-xs text-amber-400 font-extrabold tracking-widest uppercase flex items-center justify-center md:justify-start gap-2">
+              <Award className="w-4 h-4 text-amber-400" />
+              <span>إشراف وتطوير المنظومة الرقمية</span>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="text-xs text-slate-400 font-medium">تم تصميم وبرمجة وتطوير المنظومة بواسطة:</div>
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-wide">
+                {sysInfo?.author || 'المهندس / أحمد محمد عطية'}
+              </h3>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold">
+                <Cpu className="w-3.5 h-3.5" />
+                <span>مهندس تصميم الدوائر المتكاملة الرقمية وتطوير النظم البرمجية</span>
+                <span className="text-[10px] text-emerald-500/80 font-mono">(Digital IC Design Engineer)</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-400 max-w-xl leading-relaxed pt-1">
+              تم بناء هذه المنظومة بأحدث معايير الأداء البرمجي وقواعد البيانات المحلية المستقلة لتلبية متطلبات تقييم اللياقة البدنية والبدنية العسكرية بدقة وسرعة متناهية.
+            </p>
+          </div>
+
+          <div className="shrink-0 bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-center space-y-1.5 min-w-[220px]">
+            <div className="text-[11px] text-amber-400 font-bold uppercase tracking-wider">
+              جمهورية مصر العربية
+            </div>
+            <div className="text-xs font-black text-white">
+              القوات المسلحة المصرية
+            </div>
+            <div className="text-[11px] text-slate-400">
+              الكلية الحربية المصرية
+            </div>
+            <div className="pt-2 border-t border-slate-800/80 text-[10px] text-slate-500 font-mono">
+              Performance Tracker Pro v{sysInfo?.version || '2.2.0'}
+            </div>
+          </div>
         </div>
-        <div className="text-sm font-semibold text-slate-300">
-          تم تصميم وبرمجة المنظومة بواسطة: <strong className="text-white">مهندس ومطور المنظومة (Ahm3d0x)</strong>
-        </div>
-        <p className="text-[11px] text-slate-500 font-mono">
-          Performance Tracker Pro · v{sysInfo?.version || '2.2.0'} · جميع الحقوق محفوظة للقوات المسلحة المصرية
-        </p>
       </div>
     </div>
   );
